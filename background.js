@@ -1,12 +1,13 @@
 /* global browser TKVS */
 
 let store = new TKVS('keyval-store','keyval');
-
 let hiddenTabs = new Set();
+let enabled = true;
 
-store.clear();
 
 browser.runtime.onMessage.addListener(async (data /*, sender*/) => {
+
+    if(enabled) {
     if (data.type === 'screenshot') {
         const tmp = await store.get(data.url)
         if(tmp){
@@ -42,6 +43,8 @@ browser.runtime.onMessage.addListener(async (data /*, sender*/) => {
             }, 1000);
         }));
     }
+    }
+    return false;
 });
 
 browser.tabs.onRemoved.addListener( (tabId /*, removeInfo*/) => {
@@ -87,3 +90,11 @@ browser.webRequest.onHeadersReceived.addListener(
     ,['blocking', 'responseHeaders'] // extra
 );
 
+browser.browserAction.onClicked.addListener( () => {
+    enabled = !enabled;
+    browser.browserAction.setBadgeText({text: (enabled?"On":"Off")});
+    browser.browserAction.setBadgeBackgroundColor({ color: (enabled?"green":"red") });
+});
+
+browser.browserAction.setBadgeText({text: (enabled?"On":"Off")});
+browser.browserAction.setBadgeBackgroundColor({ color: (enabled?"green":"red") });

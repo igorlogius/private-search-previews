@@ -1,7 +1,6 @@
 {
   "author": "igorlogius",
   "browser_action": {
-    "default_popup": "options.html"
   },
   "background": {
     "scripts": [ 
@@ -237,10 +236,7 @@
     "128": "icon.png"
   },
   "manifest_version": 2,
-  "name": "SearchPreview-Selfhosted",
-  "options_ui": {
-    "page": "options.html"
-  },
+  "name": "SearchPreview-Overload",
   "permissions": [
     "webRequest",
     "webRequestBlocking",
