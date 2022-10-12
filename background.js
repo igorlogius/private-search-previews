@@ -7,7 +7,11 @@ let enabled = true;
 
 browser.runtime.onMessage.addListener(async (data /*, sender*/) => {
 
-    if(enabled) {
+    //console.log('onMessage');
+
+    if(!enabled) {
+        return '';
+    }
     if (data.type === 'screenshot') {
         const tmp = await store.get(data.url)
         if(tmp){
@@ -28,7 +32,7 @@ browser.runtime.onMessage.addListener(async (data /*, sender*/) => {
         hiddenTabs.add(bgtab.id);
 
         return (new Promise( (resolve /*, reject*/) => {
-            let repeats = 10;
+            let repeats = 20;
             let siid = setInterval(async() => {
                 const tmp = await store.get(data.url)
                 if(tmp){
@@ -43,7 +47,6 @@ browser.runtime.onMessage.addListener(async (data /*, sender*/) => {
             }, 1000);
         }));
     }
-    }
     return false;
 });
 
@@ -55,8 +58,18 @@ browser.tabs.onRemoved.addListener( (tabId /*, removeInfo*/) => {
 
 browser.tabs.onUpdated.addListener(
     async (tabId, changeInfo, tabInfo) => {
-        if(hiddenTabs.has(tabId)){
+
+            if(changeInfo.status === 'loading' && tabInfo.url){
+                if(
+                    /https:\/\/(www\.)?(duckduckgo|google)(\.[a-z]{2,3}){1,2}/g.test(tabInfo.url)
+                ) {
+                    console.debug('executeScript');
+                    browser.tabs.executeScript(tabId, {file: 'content.js'});
+                }
+            }else
             if(changeInfo.status === 'complete'){
+
+        if(hiddenTabs.has(tabId)){
                 //console.debug('handleUpdated', tabId, tabInfo.url);
                 const imguri = await browser.tabs.captureTab(tabId, {
                     format: 'jpeg',

@@ -30,7 +30,7 @@ async function checkResource(url) {
     return false;
 }
 
-let spcore = {
+spcore = {
     GP_DOCUMENT: null,
 
     GP_REMOTE: null,
@@ -142,24 +142,35 @@ let spcore = {
     },
 
     isDDG: function(href) {
-        return href.match(/https?:\/\/(next\.)?duckduckgo.com\/.*/i);
+        const ret = /https?:\/\/(next\.)?duckduckgo\.com\/.*/i.test(href);
+        //const ret = href.match(/https?:\/\/(next\.)?duckduckgo.com\/.*/i);
+        console.debug('isDDG', ret);
+        return ret;
     },
 
     isDDGHtml: function(href) {
-        return href.match(/https?:\/\/duckduckgo.com\/html.*/i);
+        const ret = /https?:\/\/duckduckgo\.com\/html.*/i.test(href);
+        console.debug('isDDGHtml', ret);
+        return ret;
     },
 
     isEngine: function(href) {
-        return href.match(/https?:\/\/(www|ipv6|encrypted)(|[0-9])\.(|l\.)google\..*\/.*/i) || this.isDDG(href);
+        const ret = href.match(/https?:\/\/(www|ipv6|encrypted)(|[0-9])\.(|l\.)google\..*\/.*/i) || this.isDDG(href);
+        console.log('isEngine', ret);
+        return ret;
     },
 
     GP_main: function()
     {
+        console.log('GP_main');
         let url = this.GP_DOCUMENT.location.href;
 
+        /*
         if (!this.isEngine(url)) {
+            console.debug('false');
             return;
         }
+        */
 
         //DDG
         if (this.isDDGHtml(url)) {
@@ -218,6 +229,12 @@ let spcore = {
                     thumb.setAttribute("src", await this.getImageURL(href));
                     a.setAttribute("done", "done");
 
+                    /*
+                    if(thumb.src === ''){
+                        thumb.alt = 'blub';
+                    }
+                    */
+
                     //new 2021-08-11 Check for googles own images (mostly product images)
                     let googleAlreadyHasAnImage = this.fetchElement(doc, ".//img[@width>80 or @height>80]", rDiv);
                     if (!googleAlreadyHasAnImage) {
@@ -235,7 +252,7 @@ let spcore = {
 
 function HandleDOMContent(evt) {
         console.debug('HandleDOMContent');
-        let doc = evt.target;
+        let doc = document; //evt.target;
         if (doc._sp_x_loaded) return;
         doc._sp_x_loaded = true;
 
@@ -355,12 +372,16 @@ function HandleDOMContent(evt) {
 
     spcore.window = window;
     spcore.initDoc = document;
-    spcore.GP_REMOTE = await getFromStorage('string','remote','http://localhost:7050/api');
+    //spcore.GP_REMOTE = await getFromStorage('string','remote','http://localhost:7050/api');
 
+    /*
     let checkDoc = spcore.initDoc;
     if (!(typeof checkDoc === 'undefined') && !checkDoc._sp_x_loaded && checkDoc.nodeName == "#document") {
-        addEventListener("DOMContentLoaded", HandleDOMContent);
+        //addEventListener("DOMContentLoaded", HandleDOMContent);
     }
+    */
+    HandleDOMContent();
 
 })();
+
 
