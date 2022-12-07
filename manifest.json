@@ -12,7 +12,7 @@
     "128": "icon.png"
   },
   "manifest_version": 2,
-  "name": "SearchPreview-Overload",
+  "name": "Private Search Previews",
   "permissions": [
     "webRequest",
     "webRequestBlocking",
@@ -20,5 +20,5 @@
     "tabHide",
     "storage"
   ],
-  "version": "1.13.1"
+  "version": "1.13.2"
 }
